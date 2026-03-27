@@ -1,0 +1,124 @@
+{
+  "summary": {
+    "tests_run": 19,
+    "tests_passed": 19,
+    "success_rate": 100.0,
+    "timestamp": "2026-03-27T12:37:55.010410"
+  },
+  "results": [
+    {
+      "test": "Admin Login",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:53.614897"
+    },
+    {
+      "test": "Get Current User",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:53.660860"
+    },
+    {
+      "test": "User Registration",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:53.934383"
+    },
+    {
+      "test": "Logout",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:53.984442"
+    },
+    {
+      "test": "Re-login as Admin",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.253313"
+    },
+    {
+      "test": "Get Interests List",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.299309"
+    },
+    {
+      "test": "Create Interest",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.347602"
+    },
+    {
+      "test": "Get Interests After Creation",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.393128"
+    },
+    {
+      "test": "Update Interest",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.441106"
+    },
+    {
+      "test": "Delete Interest",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.504978"
+    },
+    {
+      "test": "Get Sources List",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.575217"
+    },
+    {
+      "test": "Toggle Source",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.621339"
+    },
+    {
+      "test": "Get Feed List",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.669093"
+    },
+    {
+      "test": "Refresh Feed",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.715248"
+    },
+    {
+      "test": "Get Feed After Refresh",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.809077"
+    },
+    {
+      "test": "Get Notifications",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.852888"
+    },
+    {
+      "test": "Get Unread Count",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.899849"
+    },
+    {
+      "test": "Mark All Notifications Read",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:54.945390"
+    },
+    {
+      "test": "Update Profile",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-27T12:37:55.010245"
+    }
+  ]
+}
