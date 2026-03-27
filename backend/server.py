@@ -276,49 +276,63 @@ async def toggle_source(source_id: str, user: dict = Depends(get_current_user)):
 
 async def scrape_naver_news(keywords: List[str]) -> List[dict]:
     results = []
-    async with httpx.AsyncClient(timeout=10) as client_http:
+    async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
         for keyword in keywords[:3]:
             try:
-                url = f"https://search.naver.com/search.naver?where=news&query={keyword}"
-                resp = await client_http.get(url, headers={"User-Agent": "Mozilla/5.0"})
+                url = f"https://m.search.naver.com/search.naver?where=m_news&query={keyword}&sm=mtb_jum"
+                headers = {"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"}
+                resp = await client_http.get(url, headers=headers)
                 if resp.status_code == 200:
                     soup = BeautifulSoup(resp.text, "html.parser")
-                    news_items = soup.select(".news_tit")[:5]
-                    for item in news_items:
-                        title = item.get_text(strip=True)
-                        link = item.get("href", "")
-                        results.append({
-                            "title": title,
-                            "url": link,
-                            "source": "Naver News",
-                            "keyword": keyword,
-                            "snippet": title
-                        })
+                    all_links = soup.find_all("a", href=True)
+                    seen_titles = set()
+                    for link in all_links:
+                        href = link.get("href", "")
+                        text = link.get_text(strip=True)
+                        if ("n.news.naver.com/article" in href or "news.naver.com/article" in href) and len(text) > 15 and text not in seen_titles:
+                            # Clean up text - remove source/time suffixes
+                            clean_title = text
+                            for suffix in ["네이버뉴스", "시간 전", "분 전", "일 전"]:
+                                idx = clean_title.find(suffix)
+                                if idx > 0:
+                                    # Find the last Korean character before the suffix
+                                    pass
+                            seen_titles.add(text)
+                            results.append({
+                                "title": clean_title[:120],
+                                "url": href,
+                                "source": "Naver News",
+                                "keyword": keyword,
+                                "snippet": clean_title[:120]
+                            })
+                            if len(results) >= 5 * (keywords.index(keyword) + 1):
+                                break
             except Exception as e:
                 logger.error(f"Naver scraping error for {keyword}: {e}")
     return results
 
 async def scrape_google_news(keywords: List[str]) -> List[dict]:
     results = []
-    async with httpx.AsyncClient(timeout=10) as client_http:
+    async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
         for keyword in keywords[:3]:
             try:
-                url = f"https://news.google.com/search?q={keyword}&hl=ko&gl=KR"
+                url = f"https://news.google.com/rss/search?q={keyword}&hl=ko&gl=KR&ceid=KR:ko"
                 resp = await client_http.get(url, headers={"User-Agent": "Mozilla/5.0"})
                 if resp.status_code == 200:
-                    soup = BeautifulSoup(resp.text, "html.parser")
-                    articles = soup.select("article")[:5]
-                    for art in articles:
-                        a_tag = art.find("a")
-                        title = a_tag.get_text(strip=True) if a_tag else ""
-                        link = "https://news.google.com" + a_tag.get("href", "")[1:] if a_tag else ""
+                    soup = BeautifulSoup(resp.text, "lxml-xml")
+                    items = soup.find_all("item")[:5]
+                    for item in items:
+                        title_tag = item.find("title")
+                        link_tag = item.find("link")
+                        title = title_tag.get_text(strip=True) if title_tag else ""
+                        link = link_tag.get_text(strip=True) if link_tag else ""
                         if title:
                             results.append({
-                                "title": title,
+                                "title": title[:120],
                                 "url": link,
                                 "source": "Google News",
                                 "keyword": keyword,
-                                "snippet": title
+                                "snippet": title[:120]
                             })
             except Exception as e:
                 logger.error(f"Google News scraping error for {keyword}: {e}")
