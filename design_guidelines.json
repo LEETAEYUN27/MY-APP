@@ -1,0 +1,107 @@
+{
+  "theme": "light",
+  "archetype": "Organic & Earthy",
+  "typography": {
+    "headings": {
+      "font_family": "Work Sans",
+      "font_weight": "font-bold",
+      "letter_spacing": "tracking-tight",
+      "scale": {
+        "h1": "text-4xl md:text-5xl",
+        "h2": "text-3xl md:text-4xl",
+        "h3": "text-2xl md:text-3xl",
+        "h4": "text-xl md:text-2xl"
+      }
+    },
+    "body": {
+      "font_family": "IBM Plex Sans",
+      "font_weight": "font-medium",
+      "line_height": "leading-relaxed",
+      "scale": {
+        "base": "text-lg md:text-xl",
+        "small": "text-base md:text-lg"
+      }
+    }
+  },
+  "colors": {
+    "background": {
+      "base": "bg-[#F9F8F6]",
+      "card": "bg-[#FFFFFF]",
+      "accent_subtle": "bg-[#EAE6DF]"
+    },
+    "text": {
+      "primary": "text-[#1A1A1A]",
+      "secondary": "text-[#4A4A4A]",
+      "accent": "text-[#D86246]"
+    },
+    "accents": {
+      "primary": "bg-[#D86246]",
+      "primary_hover": "hover:bg-[#C25238] hover:text-white",
+      "secondary": "bg-[#718F7B]",
+      "secondary_hover": "hover:bg-[#5D7765] hover:text-white"
+    },
+    "borders": {
+      "default": "border-[#EAE6DF]",
+      "focus": "focus:ring-2 focus:ring-[#D86246]"
+    }
+  },
+  "spacing_and_layout": {
+    "padding": {
+      "container": "p-6 md:p-12",
+      "card": "p-6 md:p-8"
+    },
+    "border_radius": "rounded-2xl",
+    "grid": {
+      "dashboard": "grid-cols-1 md:grid-cols-2 gap-6 md:gap-8"
+    },
+    "interactive": {
+      "min_height": "min-h-[56px]",
+      "touch_target_padding": "py-4 px-6"
+    }
+  },
+  "components": {
+    "button": "Large size, highly visible. Solid background for primary action. Include icons on the left for clarity. Rounded-2xl.",
+    "card": "White background, soft 1px border (#EAE6DF), slight shadow (shadow-sm). Do not use complex glassmorphism.",
+    "input": "Large input fields with clear labels above. High contrast border. Font size text-lg.",
+    "tabs": "Use button-like tabs that are easy to tap, avoiding small underlined text.",
+    "notification_badge": "Large circle, bright terracotta (#D86246) color, clear numbers."
+  },
+  "icons": {
+    "library": "lucide-react",
+    "style": "Simple, large stroke width (2px or more), easily recognizable."
+  },
+  "animations": {
+    "hover": "transition-transform duration-200 hover:-translate-y-1",
+    "active": "active:scale-95",
+    "page_load": "animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out"
+  },
+  "media": {
+    "hero_background": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/e029970c-6744-4d13-9eb9-f32a052f4447/images/cb629ba32d1a239f90ab9585eeecda9688e73d334dd5fd99cccf56ea5429ab70.png",
+      "description": "Warm organic shapes, beige and sage green background for header or hero section."
+    },
+    "user_avatar": {
+      "url": "https://images.pexels.com/photos/3831612/pexels-photo-3831612.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Smiling elderly man in suit, used for user profile avatar placeholder."
+    },
+    "news_placeholder_1": {
+      "url": "https://images.unsplash.com/photo-1502458051560-7f33ac46fda3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHwyfHxuZXdzJTIwbmV3c3BhcGVyJTIwY29mZmVlJTIwZGVza3xlbnwwfHx8fDE3NzQ2MTMyNzV8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Coffee and newspaper on desk, used as default image for news cards."
+    },
+    "news_placeholder_2": {
+      "url": "https://images.pexels.com/photos/3944425/pexels-photo-3944425.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Fresh cup of coffee resting on a newspaper."
+    }
+  },
+  "specific_instructions_to_agent": [
+    "Prioritize accessibility: use text-lg as base text size, not text-sm. The app is targeted to the elderly, readability is #1 priority.",
+    "Ensure all buttons and inputs have min-h-[56px] for easy tapping by elderly users.",
+    "All interactive elements must have data-testid attributes.",
+    "Avoid confusing drop-down menus; use large radio buttons, toggle cards, or simple list selections where possible.",
+    "Maintain high contrast ratios. Never use light grey text on white backgrounds. Follow minimum 4.5:1 ratio.",
+    "Use Work Sans for headings and IBM Plex Sans for body text to maintain friendliness and extreme clarity.",
+    "Keep navigation extremely simple. Avoid hidden hamburger menus on desktop; use a sticky top navigation or highly visible sidebar.",
+    "In the news feed, show large article cards with clear source badges (e.g., 'Naver', 'DART') and AI summary tags.",
+    "When customizing Shadcn components, override heights and paddings to be much larger and generous."
+  ]
+}
