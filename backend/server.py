@@ -94,11 +94,18 @@ class InterestCreate(BaseModel):
     category: str  # youth_benefits, celebrity, company_news, product, custom
     keywords: List[str]
     description: Optional[str] = ""
+    # 혜택/복지 카테고리 전용 필드
+    gender: Optional[str] = None  # male, female, etc.
+    age: Optional[int] = None
+    residence: Optional[str] = None  # 거주지
 
 class InterestUpdate(BaseModel):
     category: Optional[str] = None
     keywords: Optional[List[str]] = None
     description: Optional[str] = None
+    gender: Optional[str] = None
+    age: Optional[int] = None
+    residence: Optional[str] = None
 
 class SourceCreate(BaseModel):
     name: str
@@ -209,6 +216,9 @@ async def create_interest(data: InterestCreate, user: dict = Depends(get_current
         "category": data.category,
         "keywords": data.keywords,
         "description": data.description or "",
+        "gender": data.gender,
+        "age": data.age,
+        "residence": data.residence,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.interests.insert_one(doc)
@@ -244,19 +254,25 @@ async def delete_interest(interest_id: str, user: dict = Depends(get_current_use
 # ==================== SOURCES ROUTES ====================
 
 DEFAULT_SOURCES = [
-    {"id": "naver_news", "name": "Naver News", "source_type": "naver_news", "url": "https://search.naver.com/search.naver", "enabled": True, "is_default": True},
-    {"id": "google_news", "name": "Google News", "source_type": "google_news", "url": "https://news.google.com", "enabled": True, "is_default": True},
-    {"id": "dart", "name": "DART (Electronic Disclosure)", "source_type": "dart", "url": "https://dart.fss.or.kr", "enabled": False, "is_default": True},
+    {"id": "naver_news", "name": "네이버 뉴스", "source_type": "naver_news", "url": "https://search.naver.com/search.naver", "enabled": True, "is_default": True},
+    {"id": "google_news", "name": "구글 뉴스", "source_type": "google_news", "url": "https://news.google.com", "enabled": True, "is_default": True},
+    {"id": "dart", "name": "DART (전자공시)", "source_type": "dart", "url": "https://dart.fss.or.kr", "enabled": False, "is_default": True},
+    {"id": "youthcenter", "name": "온통청년", "source_type": "welfare", "url": "https://www.youthcenter.go.kr", "enabled": True, "is_default": True},
+    {"id": "jobaba", "name": "잡아바 (경기도 일자리)", "source_type": "welfare", "url": "https://job.gg.go.kr", "enabled": True, "is_default": True},
+    {"id": "gg_youth", "name": "경기청년포털", "source_type": "welfare", "url": "https://youth.gg.go.kr", "enabled": True, "is_default": True},
+    {"id": "bokjiro", "name": "복지로", "source_type": "welfare", "url": "https://www.bokjiro.go.kr", "enabled": True, "is_default": True},
 ]
 
 @api_router.get("/sources")
 async def get_sources(user: dict = Depends(get_current_user)):
     user_sources = await db.sources.find({"user_id": user["_id"]}, {"_id": 0}).to_list(50)
-    if not user_sources:
-        # Initialize with defaults
-        for src in DEFAULT_SOURCES:
+    # 기본 소스가 누락되었으면 추가
+    existing_ids = {s["id"] for s in user_sources}
+    for src in DEFAULT_SOURCES:
+        if src["id"] not in existing_ids:
             doc = {**src, "user_id": user["_id"]}
             await db.sources.insert_one(doc)
+    if len(existing_ids) < len(DEFAULT_SOURCES):
         user_sources = await db.sources.find({"user_id": user["_id"]}, {"_id": 0}).to_list(50)
     return user_sources
 
@@ -338,6 +354,104 @@ async def scrape_google_news(keywords: List[str]) -> List[dict]:
                 logger.error(f"Google News scraping error for {keyword}: {e}")
     return results
 
+async def scrape_welfare_sites(keywords: List[str], welfare_interests: List[dict]) -> List[dict]:
+    """복지/혜택 사이트 스크래핑 (온통청년, 잡아바, 경기청년포털, 복지로)"""
+    results = []
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+    
+    # 복지 관심사에서 성별/나이/거주지 추출
+    profile_info = []
+    for wi in welfare_interests:
+        parts = []
+        if wi.get("age"):
+            parts.append(f"{wi['age']}세")
+        if wi.get("gender"):
+            gender_label = "남성" if wi["gender"] == "male" else "여성" if wi["gender"] == "female" else wi["gender"]
+            parts.append(gender_label)
+        if wi.get("residence"):
+            parts.append(wi["residence"])
+        if parts:
+            profile_info.append(" ".join(parts))
+    
+    # 검색 키워드에 프로필 정보 결합
+    search_terms = list(set(keywords))[:5]
+    for info in profile_info:
+        for kw in keywords[:3]:
+            combined = f"{kw} {info}"
+            if combined not in search_terms:
+                search_terms.append(combined)
+    search_terms = search_terms[:8]
+    
+    welfare_sites = [
+        {"name": "온통청년", "base_url": "https://www.youthcenter.go.kr", "search_url": "https://www.youthcenter.go.kr/main.do"},
+        {"name": "잡아바", "base_url": "https://job.gg.go.kr", "search_url": "https://job.gg.go.kr"},
+        {"name": "경기청년포털", "base_url": "https://youth.gg.go.kr", "search_url": "https://youth.gg.go.kr"},
+        {"name": "복지로", "base_url": "https://www.bokjiro.go.kr", "search_url": "https://www.bokjiro.go.kr"},
+    ]
+    
+    async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client_http:
+        # 1. 각 복지 사이트 메인 페이지에서 혜택 정보 스크래핑
+        for site in welfare_sites:
+            try:
+                resp = await client_http.get(site["search_url"], headers=headers)
+                if resp.status_code == 200:
+                    soup = BeautifulSoup(resp.text, "html.parser")
+                    # 일반적인 링크에서 혜택/정책 관련 텍스트 추출
+                    all_links = soup.find_all("a", href=True)
+                    benefit_keywords = ["지원", "혜택", "청년", "정책", "신청", "공고", "모집", "사업", "복지", "일자리", "취업", "창업"]
+                    count = 0
+                    seen = set()
+                    for link in all_links:
+                        text = link.get_text(strip=True)
+                        href = link.get("href", "")
+                        if len(text) > 10 and text not in seen and any(bk in text for bk in benefit_keywords):
+                            full_url = href if href.startswith("http") else f"{site['base_url']}{href}"
+                            seen.add(text)
+                            results.append({
+                                "title": text[:120],
+                                "url": full_url,
+                                "source": site["name"],
+                                "keyword": "복지혜택",
+                                "snippet": text[:120]
+                            })
+                            count += 1
+                            if count >= 5:
+                                break
+            except Exception as e:
+                logger.error(f"Welfare site scraping error for {site['name']}: {e}")
+        
+        # 2. 네이버에서 복지 키워드로 뉴스 검색
+        for term in search_terms[:3]:
+            try:
+                welfare_query = f"{term} 청년 혜택 복지 지원"
+                url = f"https://m.search.naver.com/search.naver?where=m_news&query={welfare_query}&sm=mtb_jum"
+                resp = await client_http.get(url, headers={"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15"})
+                if resp.status_code == 200:
+                    soup = BeautifulSoup(resp.text, "html.parser")
+                    all_links = soup.find_all("a", href=True)
+                    seen_titles = set()
+                    count = 0
+                    for link in all_links:
+                        href_val = link.get("href", "")
+                        text = link.get_text(strip=True)
+                        if ("n.news.naver.com/article" in href_val) and len(text) > 15 and text not in seen_titles:
+                            seen_titles.add(text)
+                            results.append({
+                                "title": text[:120],
+                                "url": href_val,
+                                "source": "복지 뉴스",
+                                "keyword": term,
+                                "snippet": text[:120]
+                            })
+                            count += 1
+                            if count >= 3:
+                                break
+            except Exception as e:
+                logger.error(f"Welfare news search error for {term}: {e}")
+    
+    return results
+    return results
+
 async def classify_with_ai(articles: List[dict], user_interests: List[dict]) -> List[dict]:
     if not articles:
         return []
@@ -350,7 +464,10 @@ async def classify_with_ai(articles: List[dict], user_interests: List[dict]) -> 
         return articles
     
     interest_desc = "; ".join([
-        f"{i['category']}: {', '.join(i['keywords'])}" for i in user_interests
+        f"{i['category']}: {', '.join(i['keywords'])}" +
+        (f" (나이: {i.get('age')}세, 성별: {i.get('gender')}, 거주지: {i.get('residence')})" 
+         if i.get('age') or i.get('gender') or i.get('residence') else "")
+        for i in user_interests
     ])
     
     articles_text = "\n".join([
@@ -370,7 +487,9 @@ async def classify_with_ai(articles: List[dict], user_interests: List[dict]) -> 
 기사 목록:
 {articles_text}
 
-각 기사에 대해 JSON 배열로 응답해주세요. 형식:
+각 기사에 대해 사용자의 관심사(나이, 성별, 거주지 포함)에 맞는 관련도를 판단하고 한국어로 1-2문장 요약을 작성해주세요.
+특히 복지/혜택 관련 기사는 사용자의 프로필(나이, 거주지 등)에 해당하는 혜택인지 판단하여 관련도를 높여주세요.
+JSON 배열로 응답해주세요. 형식:
 [{{"index": 1, "summary": "요약", "relevance": "high/medium/low"}}]"""
         
         user_msg = UserMessage(text=prompt)
@@ -426,16 +545,29 @@ async def refresh_feed(user: dict = Depends(get_current_user)):
     enabled_types = [s["source_type"] for s in sources]
     
     all_keywords = []
+    welfare_keywords = []
+    welfare_interests = []
     for interest in interests:
-        all_keywords.extend(interest.get("keywords", []))
+        kws = interest.get("keywords", [])
+        all_keywords.extend(kws)
+        if interest.get("category") == "youth_benefits":
+            welfare_keywords.extend(kws)
+            welfare_interests.append(interest)
     all_keywords = list(set(all_keywords))[:10]
+    welfare_keywords = list(set(welfare_keywords))[:5]
+    
+    # 일반 키워드 (복지 제외)
+    general_keywords = [k for k in all_keywords if k not in welfare_keywords] if welfare_keywords else all_keywords
     
     all_articles = []
-    if "naver_news" in enabled_types:
-        articles = await scrape_naver_news(all_keywords)
+    if "naver_news" in enabled_types and general_keywords:
+        articles = await scrape_naver_news(general_keywords)
         all_articles.extend(articles)
-    if "google_news" in enabled_types:
-        articles = await scrape_google_news(all_keywords)
+    if "google_news" in enabled_types and general_keywords:
+        articles = await scrape_google_news(general_keywords)
+        all_articles.extend(articles)
+    if "welfare" in enabled_types and welfare_keywords:
+        articles = await scrape_welfare_sites(welfare_keywords, welfare_interests)
         all_articles.extend(articles)
     
     if not all_articles:

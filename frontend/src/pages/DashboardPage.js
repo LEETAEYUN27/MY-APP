@@ -22,6 +22,11 @@ const SOURCE_COLORS = {
   "Naver News": "bg-[#04CF5C] text-white",
   "Google News": "bg-[#4285F4] text-white",
   "DART": "bg-[#1A237E] text-white",
+  "온통청년": "bg-[#2563EB] text-white",
+  "잡아바": "bg-[#059669] text-white",
+  "경기청년포털": "bg-[#7C3AED] text-white",
+  "복지로": "bg-[#DC2626] text-white",
+  "복지 뉴스": "bg-[#EA580C] text-white",
 };
 
 export default function DashboardPage() {

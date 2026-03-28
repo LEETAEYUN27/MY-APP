@@ -1,124 +1,160 @@
 {
   "summary": {
-    "tests_run": 19,
-    "tests_passed": 19,
+    "tests_run": 25,
+    "tests_passed": 25,
     "success_rate": 100.0,
-    "timestamp": "2026-03-27T12:37:55.010410"
+    "timestamp": "2026-03-28T05:18:51.366337"
   },
   "results": [
     {
       "test": "Admin Login",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:53.614897"
+      "timestamp": "2026-03-28T05:18:08.357551"
     },
     {
       "test": "Get Current User",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:53.660860"
+      "timestamp": "2026-03-28T05:18:08.408100"
     },
     {
       "test": "User Registration",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:53.934383"
+      "timestamp": "2026-03-28T05:18:08.685078"
     },
     {
       "test": "Logout",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:53.984442"
+      "timestamp": "2026-03-28T05:18:08.726187"
     },
     {
       "test": "Re-login as Admin",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.253313"
+      "timestamp": "2026-03-28T05:18:08.998913"
     },
     {
       "test": "Get Interests List",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.299309"
+      "timestamp": "2026-03-28T05:18:09.045639"
     },
     {
-      "test": "Create Interest",
+      "test": "Create Youth Benefits Interest with Profile",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.347602"
+      "timestamp": "2026-03-28T05:18:09.102765"
+    },
+    {
+      "test": "Youth Benefits Profile Fields Saved",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-28T05:18:09.102798"
+    },
+    {
+      "test": "Create Regular Interest",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-28T05:18:09.186932"
     },
     {
       "test": "Get Interests After Creation",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.393128"
+      "timestamp": "2026-03-28T05:18:09.232862"
     },
     {
-      "test": "Update Interest",
+      "test": "Update Youth Benefits Interest",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.441106"
+      "timestamp": "2026-03-28T05:18:09.301499"
     },
     {
-      "test": "Delete Interest",
+      "test": "Delete Youth Benefits Interest",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.504978"
+      "timestamp": "2026-03-28T05:18:09.345784"
+    },
+    {
+      "test": "Delete Regular Interest",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-28T05:18:09.392056"
     },
     {
       "test": "Get Sources List",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.575217"
+      "timestamp": "2026-03-28T05:18:09.438430"
+    },
+    {
+      "test": "Sources Count (7 sources)",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-28T05:18:09.438461"
+    },
+    {
+      "test": "Welfare Sources Present",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-28T05:18:09.438491"
     },
     {
       "test": "Toggle Source",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.621339"
+      "timestamp": "2026-03-28T05:18:09.491744"
     },
     {
       "test": "Get Feed List",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.669093"
+      "timestamp": "2026-03-28T05:18:09.534880"
     },
     {
-      "test": "Refresh Feed",
+      "test": "Refresh Feed with Welfare Scraping",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.715248"
+      "timestamp": "2026-03-28T05:18:51.117004"
+    },
+    {
+      "test": "Welfare Sources in Feed",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-03-28T05:18:51.117047"
     },
     {
       "test": "Get Feed After Refresh",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.809077"
+      "timestamp": "2026-03-28T05:18:51.181630"
     },
     {
       "test": "Get Notifications",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.852888"
+      "timestamp": "2026-03-28T05:18:51.227648"
     },
     {
       "test": "Get Unread Count",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.899849"
+      "timestamp": "2026-03-28T05:18:51.274594"
     },
     {
       "test": "Mark All Notifications Read",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:54.945390"
+      "timestamp": "2026-03-28T05:18:51.322517"
     },
     {
       "test": "Update Profile",
       "success": true,
       "details": "",
-      "timestamp": "2026-03-27T12:37:55.010245"
+      "timestamp": "2026-03-28T05:18:51.366136"
     }
   ]
 }

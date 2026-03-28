@@ -10,7 +10,7 @@ import { Textarea } from "../components/ui/textarea";
 import { Plus, X, Trash2, Tag, Heart, Building2, ShoppingBag, Users, Sparkles } from "lucide-react";
 
 const CATEGORIES = [
-  { id: "youth_benefits", label: "청년혜택", icon: Users, color: "bg-blue-100 text-blue-700 border-blue-200" },
+  { id: "youth_benefits", label: "청년 혜택/복지", icon: Users, color: "bg-blue-100 text-blue-700 border-blue-200" },
   { id: "celebrity", label: "연예인/유명인", icon: Heart, color: "bg-pink-100 text-pink-700 border-pink-200" },
   { id: "company_news", label: "기업소식", icon: Building2, color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
   { id: "product", label: "상품/제품", icon: ShoppingBag, color: "bg-amber-100 text-amber-700 border-amber-200" },
@@ -25,6 +25,9 @@ export default function InterestsPage() {
   const [keywords, setKeywords] = useState([]);
   const [keywordInput, setKeywordInput] = useState("");
   const [description, setDescription] = useState("");
+  const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
+  const [residence, setResidence] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -79,12 +82,18 @@ export default function InterestsPage() {
         category: selectedCategory,
         keywords,
         description,
+        gender: selectedCategory === "youth_benefits" ? gender || null : null,
+        age: selectedCategory === "youth_benefits" && age ? parseInt(age) : null,
+        residence: selectedCategory === "youth_benefits" ? residence || null : null,
       });
       setShowForm(false);
       setSelectedCategory("");
       setKeywords([]);
       setKeywordInput("");
       setDescription("");
+      setGender("");
+      setAge("");
+      setResidence("");
       fetchInterests();
     } catch (err) {
       setError(formatApiErrorDetail(err.response?.data?.detail) || "저장에 실패했습니다.");
@@ -215,6 +224,67 @@ export default function InterestsPage() {
                 />
               </div>
 
+              {selectedCategory === "youth_benefits" && (
+                <div className="space-y-4 p-5 bg-blue-50 border-2 border-blue-200 rounded-2xl" data-testid="welfare-profile-section">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Users className="w-5 h-5 text-blue-600" />
+                    <Label className="text-base font-bold text-blue-800">맞춤형 혜택을 위한 개인정보</Label>
+                  </div>
+                  <p className="text-sm text-blue-600 mb-2">
+                    정확한 맞춤형 혜택 정보를 제공하기 위해 아래 정보를 입력해주세요.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-base font-medium text-[#1A1A1A]">성별</Label>
+                      <div className="flex gap-2">
+                        {[
+                          { value: "male", label: "남성" },
+                          { value: "female", label: "여성" },
+                        ].map((opt) => (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => setGender(opt.value)}
+                            className={`flex-1 min-h-[48px] px-4 rounded-xl border-2 text-base font-medium transition-all ${
+                              gender === opt.value
+                                ? "border-blue-500 bg-blue-100 text-blue-700"
+                                : "border-[#EAE6DF] bg-white text-[#4A4A4A] hover:border-blue-300"
+                            }`}
+                            data-testid={`gender-${opt.value}`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-base font-medium text-[#1A1A1A]">나이</Label>
+                      <Input
+                        type="number"
+                        value={age}
+                        onChange={(e) => setAge(e.target.value)}
+                        placeholder="예: 27"
+                        className="min-h-[48px] text-lg border-[#EAE6DF] rounded-xl"
+                        data-testid="age-input"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-base font-medium text-[#1A1A1A]">거주지</Label>
+                      <Input
+                        value={residence}
+                        onChange={(e) => setResidence(e.target.value)}
+                        placeholder="예: 경기도 동탄"
+                        className="min-h-[48px] text-lg border-[#EAE6DF] rounded-xl"
+                        data-testid="residence-input"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="flex gap-3">
                 <Button
                   type="submit"
@@ -314,6 +384,26 @@ export default function InterestsPage() {
 
                   {interest.description && (
                     <p className="text-base text-[#4A4A4A] leading-relaxed">{interest.description}</p>
+                  )}
+
+                  {(interest.gender || interest.age || interest.residence) && (
+                    <div className="flex flex-wrap gap-2 mt-2 pt-2 border-t border-[#EAE6DF]">
+                      {interest.gender && (
+                        <Badge className="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-200">
+                          {interest.gender === "male" ? "남성" : interest.gender === "female" ? "여성" : interest.gender}
+                        </Badge>
+                      )}
+                      {interest.age && (
+                        <Badge className="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-200">
+                          {interest.age}세
+                        </Badge>
+                      )}
+                      {interest.residence && (
+                        <Badge className="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-200">
+                          {interest.residence}
+                        </Badge>
+                      )}
+                    </div>
                   )}
                 </CardContent>
               </Card>

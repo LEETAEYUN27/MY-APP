@@ -9,6 +9,7 @@ const SOURCE_ICONS = {
   naver_news: Newspaper,
   google_news: Globe,
   dart: FileText,
+  welfare: Database,
   custom: Database,
 };
 
@@ -16,6 +17,7 @@ const SOURCE_DESCRIPTIONS = {
   naver_news: "네이버 뉴스에서 최신 뉴스를 가져옵니다",
   google_news: "구글 뉴스 한국판에서 최신 뉴스를 가져옵니다",
   dart: "DART 전자공시시스템에서 기업 공시정보를 가져옵니다",
+  welfare: "복지/혜택 관련 정보를 수집합니다",
 };
 
 export default function SourcesPage() {
